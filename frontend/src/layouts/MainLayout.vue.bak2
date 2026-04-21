@@ -1,0 +1,198 @@
+<template>
+  <div class="main-layout">
+    <div class="sidebar">
+      <div class="logo">
+        <span>低代码平台</span>
+      </div>
+      <el-menu
+        :default-active="activeMenu"
+        class="sidebar-menu"
+        background-color="#304156"
+        text-color="#bfcbd9"
+        active-text-color="#409eff"
+        router
+        :collapse="isCollapse"
+      >
+        <template v-for="menu in userMenus" :key="menu.id">
+          <!-- 有子菜单 -->
+          <el-sub-menu v-if="menu.children && menu.children.length" :index="menu.path">
+            <template #title>
+              <el-icon v-if="menu.icon"><component :is="getIconComponent(menu.icon)" /></el-icon>
+              <span>{{ menu.menuName }}</span>
+            </template>
+            <el-menu-item
+              v-for="child in menu.children"
+              :key="child.id"
+              :index="child.path"
+            >
+              <el-icon v-if="child.icon"><component :is="getIconComponent(child.icon)" /></el-icon>
+              <span>{{ child.menuName }}</span>
+            </el-menu-item>
+          </el-sub-menu>
+          <!-- 无子菜单 -->
+          <el-menu-item v-else :index="menu.path">
+            <el-icon v-if="menu.icon"><component :is="getIconComponent(menu.icon)" /></el-icon>
+            <span>{{ menu.menuName }}</span>
+          </el-menu-item>
+        </template>
+      </el-menu>
+    </div>
+    <div class="content">
+      <div class="header">
+        <div class="header-left">
+          <el-icon @click="toggleCollapse" class="collapse-icon">
+            <Fold v-if="!isCollapse" />
+            <Expand v-else />
+          </el-icon>
+        </div>
+        <div class="header-right">
+          <el-dropdown @command="handleCommand">
+            <span class="user-info">
+              {{ currentUser }}
+              <el-icon><ArrowDown /></el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+      </div>
+      <div class="page-content">
+        <router-view />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { Fold, Expand, ArrowDown } from '@element-plus/icons-vue'
+import * as ElementPlusIcons from '@element-plus/icons-vue'
+import type { Menu } from '@/api/menu'
+
+const router = useRouter()
+const route = useRoute()
+const isCollapse = ref(false)
+const currentUser = ref('')
+const userMenus = ref<Menu[]>([])
+
+// 当前激活的菜单
+const activeMenu = computed(() => route.path)
+
+// 获取图标组件
+const getIconComponent = (iconName: string) => {
+  return (ElementPlusIcons as any)[iconName] || 'Menu'
+}
+
+// 切换侧边栏
+const toggleCollapse = () => {
+  isCollapse.value = !isCollapse.value
+}
+
+// 处理下拉菜单命令
+const handleCommand = (command: string) => {
+  if (command === 'logout') {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    router.push('/login')
+  }
+}
+
+// 从登录信息中获取用户菜单
+const initUserMenus = () => {
+  const userStr = localStorage.getItem('user')
+  if (userStr) {
+    const user = JSON.parse(userStr)
+    currentUser.value = user.realName || user.username
+    userMenus.value = user.menus || []
+  }
+}
+
+onMounted(() => {
+  initUserMenus()
+})
+</script>
+
+<style scoped>
+.main-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background: #304156;
+  transition: width 0.3s;
+  overflow-y: auto;
+}
+
+.sidebar .logo {
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #4a5a6a;
+}
+
+.sidebar-menu {
+  border-right: none;
+  height: calc(100vh - 60px);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  height: 60px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.collapse-icon {
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+}
+
+.collapse-icon:hover {
+  color: #409eff;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  color: #333;
+}
+
+.page-content {
+  flex: 1;
+  padding: 20px;
+  background: #f5f5f5;
+  overflow-y: auto;
+}
+</style>

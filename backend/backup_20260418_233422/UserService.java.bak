@@ -1,0 +1,77 @@
+package com.platform.system.service;
+
+import com.platform.system.entity.UserEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import jakarta.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Service
+public class UserService {
+    private final ConcurrentHashMap<Long, UserEntity> userStore = new ConcurrentHashMap<>();
+    private long idCounter = 1;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    
+    @PostConstruct
+    public void init() {
+        UserEntity admin = new UserEntity();
+        admin.setId(idCounter++);
+        admin.setTenantId(1L);
+        admin.setUsername("admin");
+        admin.setPassword(passwordEncoder.encode("admin123"));
+        admin.setRealName("管理员");
+        admin.setStatus("active");
+        admin.setCreatedAt(LocalDateTime.now());
+        userStore.put(admin.getId(), admin);
+        
+        UserEntity testUser = new UserEntity();
+        testUser.setId(idCounter++);
+        testUser.setTenantId(1L);
+        testUser.setUsername("test");
+        testUser.setPassword(passwordEncoder.encode("test123"));
+        testUser.setRealName("测试用户");
+        testUser.setStatus("active");
+        testUser.setCreatedAt(LocalDateTime.now());
+        userStore.put(testUser.getId(), testUser);
+    }
+    
+    public UserEntity login(String tenantCode, String username, String password) {
+        for (UserEntity user : userStore.values()) {
+            if (user.getUsername().equals(username) && 
+                passwordEncoder.matches(password, user.getPassword())) {
+                user.setLastLoginTime(LocalDateTime.now());
+                return user;
+            }
+        }
+        return null;
+    }
+    
+    public List<UserEntity> listByTenant(Long tenantId) {
+        List<UserEntity> result = new ArrayList<>();
+        for (UserEntity user : userStore.values()) {
+            if (user.getTenantId().equals(tenantId)) {
+                result.add(user);
+            }
+        }
+        return result;
+    }
+    
+    public void create(UserEntity user) {
+        user.setId(idCounter++);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(LocalDateTime.now());
+        userStore.put(user.getId(), user);
+    }
+    
+    public void update(UserEntity user) {
+        userStore.put(user.getId(), user);
+    }
+    
+    public void delete(Long id) {
+        userStore.remove(id);
+    }
+}

@@ -1,0 +1,1 @@
+import{r as s}from"./request-Dg9Xxc6d.js";const o=t=>s({url:"/system/post/list",method:"get",params:t}),r=t=>s({url:"/system/post",method:"post",data:t}),u=t=>s({url:"/system/post",method:"put",data:t}),m=t=>s({url:`/system/post/${t}`,method:"delete"});export{r as c,m as d,o as g,u};

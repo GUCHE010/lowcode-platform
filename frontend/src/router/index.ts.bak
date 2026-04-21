@@ -1,0 +1,44 @@
+import { createRouter, createWebHistory } from 'vue-router'
+
+const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/login/Login.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/',
+    component: () => import('@/layouts/MainLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: 'user',
+        name: 'UserList',
+        component: () => import('@/views/system/user/UserList.vue'),
+        meta: { title: '用户管理' }
+      }
+    ]
+  }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  const requiresAuth = to.meta.requiresAuth !== false
+  
+  if (requiresAuth && !token) {
+    next('/login')
+  } else if (to.path === '/login' && token) {
+    next('/')
+  } else {
+    next()
+  }
+})
+
+export default router

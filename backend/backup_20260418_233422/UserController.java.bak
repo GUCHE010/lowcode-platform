@@ -1,0 +1,50 @@
+package com.platform.system.controller;
+
+import com.platform.system.entity.UserEntity;
+import com.platform.system.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/system/user")
+public class UserController {
+    
+    @Autowired
+    private UserService userService;
+    
+    @GetMapping("/list")
+    public Map<String, Object> list(@RequestParam Long tenantId) {
+        List<UserEntity> users = userService.listByTenant(tenantId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("data", users);
+        return result;
+    }
+    
+    @PostMapping
+    public Map<String, Object> create(@RequestBody UserEntity user) {
+        userService.create(user);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        return result;
+    }
+    
+    @PutMapping
+    public Map<String, Object> update(@RequestBody UserEntity user) {
+        userService.update(user);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        return result;
+    }
+    
+    @DeleteMapping("/{id}")
+    public Map<String, Object> delete(@PathVariable Long id) {
+        userService.delete(id);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        return result;
+    }
+}

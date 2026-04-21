@@ -1,0 +1,1 @@
+import{r as t}from"./request-Dg9Xxc6d.js";const u=()=>t({url:"/system/menu/tree",method:"get"}),s=e=>t({url:"/system/menu",method:"post",data:e}),n=e=>t({url:"/system/menu",method:"put",data:e}),m=e=>t({url:`/system/menu/${e}`,method:"delete"});export{s as c,m as d,u as g,n as u};

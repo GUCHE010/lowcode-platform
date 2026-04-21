@@ -1,0 +1,53 @@
+import axios from 'axios'
+
+const request = axios.create({
+  baseURL: 'http://localhost:8080',
+  timeout: 10000
+})
+
+// 请求拦截器：添加 token
+request.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+export interface User {
+  id?: number
+  tenantId: number
+  username: string
+  password?: string
+  realName: string
+  email: string
+  phone: string
+  status: string
+  lastLoginTime?: string
+  createdAt?: string
+}
+
+// 获取用户列表
+export const getUserList = (tenantId: number) => {
+  return request.get('/api/system/user/list', { params: { tenantId } })
+}
+
+// 获取用户详情
+export const getUserById = (id: number) => {
+  return request.get(`/api/system/user/${id}`)
+}
+
+// 创建用户
+export const createUser = (data: User) => {
+  return request.post('/api/system/user', data)
+}
+
+// 更新用户
+export const updateUser = (data: User) => {
+  return request.put('/api/system/user', data)
+}
+
+// 删除用户
+export const deleteUser = (id: number) => {
+  return request.delete(`/api/system/user/${id}`)
+}
