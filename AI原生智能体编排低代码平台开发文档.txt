@@ -1,0 +1,230 @@
+低代码平台项目开发文档
+一、项目定位
+AI原生智能体编排平台
+一句话描述：让业务人员用自然语言指挥AI，自动完成跨系统业务流程编排和应用生成。
+
+二、核心功能清单
+2.1 基础平台功能（企业级必备）
+序号	功能模块	功能点	优先级
+1	租户管理	多租户隔离、租户创建/禁用/删除、套餐管理	P0
+2	组织架构	部门树、岗位体系、汇报关系	P0
+3	用户管理	用户CRUD、导入导出、批量操作	P0
+4	角色权限	RBAC模型、菜单权限、数据权限	P0
+5	登录认证	账号密码/短信/扫码/LDAP/SSO	P0
+6	授权许可	License生成/验证/到期提醒/节点限制	P0
+7	系统管理	参数配置、操作日志、登录日志、定时任务	P1
+8	审计日志	用户行为审计、数据变更记录	P1
+2.2 低代码核心功能
+序号	功能模块	功能点	优先级
+9	可视化拖拽编辑器	组件库（输入框、按钮、表格等120+）、画布编辑、属性配置	P0
+10	数据模型设计	在线创建数据库表/字段、关联关系、索引	P0
+11	页面与数据绑定	拖拽组件绑定数据源、自动生成CRUD接口	P0
+12	应用发布	一键导出Vue/React源码、直接部署	P0
+13	代码生成器	根据页面JSON生成前后端代码	P0
+14	模板市场	行业模板（OA、CRM、ERP等）、模板导入导出	P1
+15	在线预览	编辑实时预览、多端适配预览	P1
+2.3 AI特色功能（核心竞争力）
+序号	功能模块	功能点	优先级
+16	自然语言→应用	用户描述需求，AI自动生成完整应用	P0
+17	智能体编排	AI自动调用多系统API完成业务流程	P0
+18	多模态交互	语音创建流程、手绘草图转页面、Excel/Word导入转应用	P1
+19	AI辅助调试	自动检测性能瓶颈、异常诊断和修复建议	P1
+20	跨系统连接器	预置50+常用系统（钉钉、企微、飞书、金蝶、用友等）	P1
+2.4 工作流引擎功能
+序号	功能模块	功能点	优先级
+21	流程设计器	可视化拖拽设计BPMN流程	P0
+22	审批流	会签、或签、转审、驳回、撤回	P0
+23	自动任务	定时触发、API调用、数据更新	P1
+24	流程监控	流程追踪、催办、代办、超时提醒	P1
+2.5 部署与运维功能
+序号	功能模块	功能点	优先级
+25	混合部署	公有云/私有云/本地化/混合云四种模式	P0
+26	信创适配	国产芯片（龙芯、飞腾）、操作系统（麒麟、UOS）、数据库（达梦、人大金仓）	P1
+27	源码导出	代码完全导出，无平台锁定	P0
+28	容器化部署	Docker + K8s编排	P1
+29	高可用	集群部署、负载均衡、故障转移	P2
+
+三、用户角色与使用场景
+3.1 用户角色
+角色	职责	使用功能
+平台管理员	管理租户、License、系统配置	租户管理、授权许可、系统监控
+租户管理员	管理本租户的组织、用户、角色	组织架构、用户管理、角色权限
+应用开发者	使用低代码平台开发应用	可视化编辑器、数据模型、AI生成
+业务用户	使用开发好的应用	表单填写、流程审批、数据查看
+3.2 典型使用场景
+场景	描述	涉及功能
+快速搭建OA系统	10分钟生成请假、报销、审批流程	AI生成、工作流
+企业微信集成	应用发布到企微，员工使用	跨系统连接器
+信创环境部署	国产化服务器、数据库运行	信创适配、混合部署
+跨系统自动化	订单→ERP→CRM自动同步	智能体编排
+
+四、技术架构
+4.1 技术栈
+层级	技术	版本
+后端框架	Spring Boot	3.2.x
+Java版本	OpenJDK	21
+构建工具	Maven	3.9.x
+数据库	PostgreSQL	16
+缓存	Redis	7.x
+工作流	Flowable	6.8.x
+AI引擎	DeepSeek API	-
+前端框架	Vue 3	3.4.x
+构建工具	Vite	5.x
+UI框架	Element Plus	2.4.x
+状态管理	Pinia	2.1.x
+路由	Vue Router	4.2.x
+JWT	JJWT	0.11.5
+容器化	Docker + K8s	-
+4.2 系统架构图
+
+
+
+
+五、数据库设计（核心表）
+5.1 租户表
+sql
+CREATE TABLE platform_tenant (    id BIGSERIAL PRIMARY KEY,    tenant_code VARCHAR(64) UNIQUE NOT NULL,    tenant_name VARCHAR(200) NOT NULL,    license_key VARCHAR(500),    status VARCHAR(20) DEFAULT 'active',    expire_date DATE,    max_users INT DEFAULT 100,    max_apps INT DEFAULT 10,    created_at TIMESTAMP);
+5.2 部门表
+sql
+CREATE TABLE sys_dept (    id BIGSERIAL PRIMARY KEY,    tenant_id BIGINT NOT NULL,    parent_id BIGINT DEFAULT 0,    dept_name VARCHAR(100) NOT NULL,    dept_code VARCHAR(64),    sort_order INT DEFAULT 0,    leader_id BIGINT,    status VARCHAR(10) DEFAULT 'active');
+5.3 用户表
+sql
+CREATE TABLE sys_user (    id BIGSERIAL PRIMARY KEY,    tenant_id BIGINT NOT NULL,    username VARCHAR(64) NOT NULL,    password VARCHAR(200) NOT NULL,    real_name VARCHAR(100),    email VARCHAR(100),    phone VARCHAR(20),    dept_id BIGINT,    post_id BIGINT,    status VARCHAR(10) DEFAULT 'active',    last_login_time TIMESTAMP,    created_at TIMESTAMP);
+5.4 角色表
+sql
+CREATE TABLE sys_role (    id BIGSERIAL PRIMARY KEY,    tenant_id BIGINT NOT NULL,    role_code VARCHAR(64) NOT NULL,    role_name VARCHAR(100) NOT NULL,    role_type VARCHAR(20),  -- builtin/custom    data_scope VARCHAR(20) DEFAULT 'dept'  -- 数据权限范围);
+5.5 菜单表
+sql
+CREATE TABLE sys_menu (    id BIGSERIAL PRIMARY KEY,    parent_id BIGINT DEFAULT 0,    menu_name VARCHAR(100) NOT NULL,    menu_type VARCHAR(20),  -- directory/menu/button    permission VARCHAR(200),    path VARCHAR(200),    component VARCHAR(200),    sort_order INT);
+5.6 应用表（低代码生成的应用）
+sql
+CREATE TABLE lowcode_app (    id BIGSERIAL PRIMARY KEY,    tenant_id BIGINT NOT NULL,    app_name VARCHAR(100) NOT NULL,    app_type VARCHAR(50),    page_json JSONB,  -- 页面配置    data_model JSONB,  -- 数据模型    status VARCHAR(20) DEFAULT 'draft',    created_at TIMESTAMP,    updated_at TIMESTAMP);
+5.7 智能体表
+sql
+CREATE TABLE agent_definition (    id BIGSERIAL PRIMARY KEY,    tenant_id VARCHAR(64) NOT NULL,    name VARCHAR(200) NOT NULL,    description TEXT,    status VARCHAR(20) DEFAULT 'draft',    config JSONB NOT NULL,    bpmn_xml TEXT,    created_at TIMESTAMP);
+
+六、API接口设计
+6.1 认证模块
+方法	路径	说明
+POST	/api/auth/login	登录
+POST	/api/auth/logout	登出
+POST	/api/auth/refresh	刷新Token
+6.2 用户模块
+方法	路径	说明
+GET	/api/system/user/list	用户列表
+GET	/api/system/user/{id}	用户详情
+POST	/api/system/user	创建用户
+PUT	/api/system/user	更新用户
+DELETE	/api/system/user/{id}	删除用户
+6.3 租户模块
+方法	路径	说明
+GET	/api/tenant/list	租户列表
+POST	/api/tenant	创建租户
+PUT	/api/tenant	更新租户
+DELETE	/api/tenant/{id}	删除租户
+6.4 许可模块
+方法	路径	说明
+GET	/api/license/info	获取许可信息
+POST	/api/license/validate	验证许可
+POST	/api/license/upload	上传License文件
+6.5 AI生成模块
+方法	路径	说明
+POST	/api/ai/generate	自然语言生成应用
+GET	/api/ai/task/{id}	查询生成任务状态
+POST	/api/ai/deploy/{id}	部署生成的应用
+
+七、授权许可系统设计
+7.1 许可类型
+类型	说明	限制
+TRIAL	试用版	30天，10用户，1应用
+PROFESSIONAL	专业版	按年，500用户，20应用
+ENTERPRISE	企业版	永久，不限用户，不限应用
+OEM	OEM版	永久，可贴牌分发
+7.2 许可约束项
+约束项	说明
+maxTenants	最大租户数
+maxUsersPerTenant	每租户最大用户数
+maxAppsPerTenant	每租户最大应用数
+expireDate	有效期
+bindServers	绑定服务器（防盗版）
+features	功能开关（源码导出、AI生成等）
+7.3 License文件格式
+json
+{  "companyName": "XX科技有限公司",  "companyCode": "XX2024001",  "licenseType": "ENTERPRISE",  "issueDate": "2026-01-01",  "expireDate": "2099-12-31",  "maxTenants": 9999,  "maxUsersPerTenant": -1,  "maxAppsPerTenant": -1,  "bindServers": ["server-01", "server-02"],  "features": ["source_export", "ai_generate", "workflow"],  "signature": "RSA_SIGNATURE"}
+
+八、项目里程碑
+Phase 1：基础平台（0-3个月）
+
+租户管理、用户管理、角色权限
+
+
+登录认证、授权许可
+
+
+系统日志
+
+Phase 2：低代码核心（3-6个月）
+
+可视化拖拽编辑器
+
+
+数据模型设计
+
+
+代码生成器
+
+
+应用发布
+
+Phase 3：AI特色（6-9个月）
+
+自然语言→应用
+
+
+智能体编排
+
+
+跨系统连接器
+
+Phase 4：生态建设（9-12个月）
+
+模板市场
+
+
+信创适配
+
+
+多端适配
+
+
+九、开发环境要求
+工具	版本	下载地址
+JDK	21	https://adoptium.net/
+Maven	3.9+	https://maven.apache.org/
+Node.js	18+	https://nodejs.org/
+PostgreSQL	16	https://www.postgresql.org/
+Redis	7+	https://redis.io/
+Docker Desktop	最新	https://docker.com/
+IDE	VS Code / IDEA	-
+
+十、项目启动命令
+bash
+# 启动数据库docker run --name postgres -e POSTGRES_DB=lowcode -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:16docker run --name redis -p 6379:6379 -d redis:7-alpine# 启动后端cd backendmvn spring-boot:run# 启动前端（新窗口）cd frontendnpm installnpm run dev
+
+十一、项目路径
+
+项目根目录：D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform
+
+
+后端代码：backend/src/main/java/com/platform/
+
+
+前端代码：frontend/src/
+
+
+配置文件：backend/src/main/resources/application.yml
+
+
+文档版本： v1.0
+更新日期： 2026-04-21
+维护者： 开发团队
