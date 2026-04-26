@@ -51,6 +51,11 @@
       <el-table :data="tableData" stripe border style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column prop="tenantName" label="所属租户" width="180">
+          <template #default="{ row }">
+            {{ getTenantName(row.tenantId) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="username" label="用户名" width="120" />
         <el-table-column prop="realName" label="姓名" width="100" />
         <el-table-column prop="deptName" label="部门" width="120">
@@ -107,6 +112,11 @@
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px">
       <el-form :model="formData" :rules="formRules" ref="formRef" label-width="80px">
+        <el-form-item label="租户" prop="tenantId">
+          <el-select v-model="formData.tenantId" placeholder="请选择租户" style="width: 100%;">
+            <el-option v-for="tenant in tenantList" :key="tenant.id" :label="tenant.tenantName" :value="tenant.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="用户名" prop="username">
           <el-input v-model="formData.username" placeholder="请输入用户名" :disabled="dialogTitle === '编辑用户'" />
         </el-form-item>
@@ -187,6 +197,7 @@ import { getUserList, searchUsers, createUser, updateUser, deleteUser, getUserRo
 import { getRoleList } from '@/api/role'
 import { getDeptList } from '@/api/dept'
 import { getPostList } from '@/api/post'
+import { getTenantList } from '@/api/tenant'
 
 const searchForm = ref({
   username: '',
@@ -204,6 +215,7 @@ const total = ref(0)
 const selectedUsers = ref<any[]>([])
 const deptList = ref<any[]>([])
 const postList = ref<any[]>([])
+const tenantList = ref<any[]>([])
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增用户')
@@ -214,6 +226,7 @@ const formData = ref({
   realName: '',
   email: '',
   phone: '',
+  tenantId: null as number | null,
   deptId: null as number | null,
   postId: null as number | null,
   password: '',
@@ -230,6 +243,7 @@ const uploadRef = ref()
 const importFile = ref<File | null>(null)
 
 const formRules = {
+  tenantId: [{ required: true, message: '请选择租户', trigger: 'change' }],
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   realName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
@@ -248,10 +262,21 @@ const getPostName = (postId: number | null) => {
   return post ? post.postName : '-'
 }
 
+const getTenantName = (tenantId: number | null) => {
+  if (!tenantId) return '-'
+  const tenant = tenantList.value.find(t => t.id === tenantId)
+  return tenant ? tenant.tenantName : '-'
+}
+
 const loadDeptsAndPosts = async () => {
   try {
     const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
     const tenantId = userInfo.tenantId || 1
+
+    const tenantRes = await getTenantList()
+    if (tenantRes.success) {
+      tenantList.value = tenantRes.data || []
+    }
 
     const deptRes = await getDeptList({ tenantId })
     if (deptRes.success) {
@@ -377,12 +402,14 @@ const handleBatchDisable = async () => {
 
 const handleAdd = () => {
   dialogTitle.value = '新增用户'
+  const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
   formData.value = {
     id: null,
     username: '',
     realName: '',
     email: '',
     phone: '',
+    tenantId: userInfo.tenantId || 1,
     deptId: null,
     postId: null,
     password: '',
@@ -393,7 +420,7 @@ const handleAdd = () => {
 
 const handleEdit = (row: any) => {
   dialogTitle.value = '编辑用户'
-  formData.value = { ...row, password: '', deptId: row.deptId || null, postId: row.postId || null }
+  formData.value = { ...row, password: '', deptId: row.deptId || null, postId: row.postId || null, tenantId: row.tenantId || null }
   dialogVisible.value = true
 }
 

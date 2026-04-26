@@ -72,6 +72,18 @@ const routes = [
         name: 'DictionaryTypeList',
         component: () => import('@/views/system/dicttype/DictionaryTypeList.vue'),
         meta: { title: '字典类型', permission: 'system:dictionaryType' }
+      },
+      {
+        path: 'tenant',
+        name: 'TenantList',
+        component: () => import('@/views/system/tenant/TenantList.vue'),
+        meta: { title: '租户管理', permission: 'system:tenant' }
+      },
+      {
+        path: 'license',
+        name: 'LicenseList',
+        component: () => import('@/views/system/license/LicenseList.vue'),
+        meta: { title: '授权许可', permission: 'system:license' }
       }
     ]
   }

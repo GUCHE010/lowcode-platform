@@ -1,3 +1,4 @@
+D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\tenant\controller\TenantController.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\controller\LoginLogController.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\repository\DeptRepository.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\service\UserImportExportService.java
@@ -11,9 +12,11 @@ D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\pla
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\tenant\entity\TenantEntity.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\repository\RoleMenuRepository.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\entity\PostEntity.java
+D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\repository\LicenseRepository.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\config\SystemDataInitializer.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\service\RoleService.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\controller\OperationLogController.java
+D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\service\LicenseService.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\entity\DictionaryTypeEntity.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\service\OperationLogService.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\controller\DeptController.java
@@ -26,6 +29,7 @@ D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\pla
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\service\DictionaryCacheService.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\Application.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\config\WebConfig.java
+D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\entity\LicenseEntity.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\auth\JwtUtil.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\auth\AuthController.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\controller\RoleController.java
@@ -37,7 +41,9 @@ D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\pla
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\service\LoginLogService.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\repository\RoleRepository.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\aop\OperationLogAspect.java
+D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\controller\LicenseController.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\service\UserService.java
+D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\tenant\service\TenantService.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\entity\UserEntity.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\repository\MenuRepository.java
 D:\GUCHKAIFAPROJECT\DIDAIMAPINTAI\lowcode-platform\backend\src\main\java\com\platform\system\entity\DeptEntity.java

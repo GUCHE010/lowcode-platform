@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>License 生成器 - AI原生智能体编排平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            font-size: 14px;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: monospace;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .checkbox-item:hover {
+            background: #e8e8e8;
+        }
+        .checkbox-item input {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+        }
+        .checkbox-item span {
+            font-size: 13px;
+            color: #555;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-success {
+            background: #52c41a;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #3daf00;
+        }
+        .btn-secondary {
+            background: #909399;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #7a7a7a;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px dashed #dee2e6;
+        }
+        .result-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .license-output {
+            background: #1e1e1e;
+            color: #10b981;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            word-break: break-all;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .copy-btn {
+            margin-top: 12px;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .copy-btn:hover {
+            background: #0ea572;
+        }
+        .security-note {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fffbe6;
+            border-radius: 8px;
+            border-left: 4px solid #faad14;
+            font-size: 13px;
+            color: #8a6d3b;
+        }
+        .security-note strong {
+            color: #d48806;
+        }
+        .license-type-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f5ff;
+            border-radius: 12px;
+        }
+        .license-type-info h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .license-types {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .license-type-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .license-type-item .type {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+        .license-type-item .desc {
+            color: #888;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔐 License 生成器</h1>
+            <p class="subtitle">AI原生智能体编排平台 - 授权许可管理工具</p>
+
+            <form id="licenseForm">
+                <div class="row">
+                    <div class="form-group">
+                        <label>公司名称 *</label>
+                        <input type="text" id="companyName" placeholder="请输入公司名称" required value="测试公司">
+                    </div>
+                    <div class="form-group">
+                        <label>公司代码 *</label>
+                        <input type="text" id="companyCode" placeholder="唯一标识，如：TEST001" required value="TEST001">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>授权类型 *</label>
+                        <select id="licenseType" required>
+                            <option value="TRIAL">试用版 (TRIAL)</option>
+                            <option value="PROFESSIONAL">专业版 (PROFESSIONAL)</option>
+                            <option value="ENTERPRISE" selected>企业版 (ENTERPRISE)</option>
+                            <option value="OEM">OEM版 (OEM)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>到期日期</label>
+                        <input type="date" id="expireDate" value="2099-12-31">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>最大租户数 (-1=不限)</label>
+                        <input type="number" id="maxTenants" value="-1">
+                    </div>
+                    <div class="form-group">
+                        <label>每租户最大用户数 (-1=不限)</label>
+                        <input type="number" id="maxUsersPerTenant" value="-1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>每租户最大应用数 (-1=不限)</label>
+                    <input type="number" id="maxAppsPerTenant" value="-1">
+                </div>
+
+                <div class="form-group">
+                    <label>功能开关</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="features" value="source_export" checked>
+                            <span>源码导出</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="features" value="ai_generate" checked>
+                            <span>AI生成</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="features" value="workflow" checked>
+                            <span>工作流</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="features" value="multi_tenant" checked>
+                            <span>多租户</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="features" value="sms_auth">
+                            <span>短信认证</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="features" value="ldap_auth">
+                            <span>LDAP集成</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="generateLicense()">生成 License</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">重置</button>
+                </div>
+            </form>
+
+            <div class="result" id="resultSection" style="display: none;">
+                <div class="result-title">✅ License Key（复制以下内容到系统安装）：</div>
+                <div class="license-output" id="licenseOutput"></div>
+                <button class="copy-btn" onclick="copyLicense()">📋 复制 License</button>
+            </div>
+
+            <div class="security-note">
+                <strong>⚠️ 安全说明：</strong>
+                此为<strong>基础版License</strong>，采用 Base64 + MD5 校验。
+                修改任何内容都会导致校验失败，确保License内容不被篡改。
+                如需更高安全性，可升级为 <strong>RSA签名版本</strong>。
+            </div>
+
+            <div class="license-type-info">
+                <h3>📋 授权类型说明</h3>
+                <div class="license-types">
+                    <div class="license-type-item">
+                        <div class="type">TRIAL</div>
+                        <div class="desc">试用版<br>30天限制</div>
+                    </div>
+                    <div class="license-type-item">
+                        <div class="type">PROFESSIONAL</div>
+                        <div class="desc">专业版<br>500用户</div>
+                    </div>
+                    <div class="license-type-item">
+                        <div class="type">ENTERPRISE</div>
+                        <div class="desc">企业版<br>不限用户</div>
+                    </div>
+                    <div class="license-type-item">
+                        <div class="type">OEM</div>
+                        <div class="desc">OEM版<br>可贴牌</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LICENSE_SECRET = 'LowcodePlatform2026SecretKey';
+
+        function calculateMd5(str) {
+            function md5cycle(x, k) {
+                let a = x[0], b = x[1], c = x[2], d = x[3];
+                a = ff(a, b, c, d, k[0], 7, -680876936);
+                d = ff(d, a, b, c, k[1], 12, -389564586);
+                c = ff(c, d, a, b, k[2], 17, 606105819);
+                b = ff(b, c, d, a, k[3], 22, -1044525330);
+                a = ff(a, b, c, d, k[4], 7, -176418897);
+                d = ff(d, a, b, c, k[5], 12, 1200080426);
+                c = ff(c, d, a, b, k[6], 17, -1473231341);
+                b = ff(b, c, d, a, k[7], 22, -45705983);
+                a = ff(a, b, c, d, k[8], 7, 1770035416);
+                d = ff(d, a, b, c, k[9], 12, -1958414417);
+                c = ff(c, d, a, b, k[10], 17, -42063);
+                b = ff(b, c, d, a, k[11], 22, -1990404162);
+                a = ff(a, b, c, d, k[12], 7, 1804603682);
+                d = ff(d, a, b, c, k[13], 12, -40341101);
+                c = ff(c, d, a, b, k[14], 17, -1502002290);
+                b = ff(b, c, d, a, k[15], 22, 1236535329);
+                a = gg(a, b, c, d, k[1], 5, -165796510);
+                d = gg(d, a, b, c, k[6], 9, -1069501632);
+                c = gg(c, d, a, b, k[11], 14, 643717713);
+                b = gg(b, c, d, a, k[0], 20, -373897302);
+                a = gg(a, b, c, d, k[5], 5, -701558691);
+                d = gg(d, a, b, c, k[10], 9, 38016083);
+                c = gg(c, d, a, b, k[15], 14, -660478335);
+                b = gg(b, c, d, a, k[4], 20, -405537848);
+                a = gg(a, b, c, d, k[9], 5, 568446438);
+                d = gg(d, a, b, c, k[14], 9, -1019803690);
+                c = gg(c, d, a, b, k[3], 14, -187363961);
+                b = gg(b, c, d, a, k[8], 20, 1163531501);
+                a = gg(a, b, c, d, k[13], 5, -1444681467);
+                d = gg(d, a, b, c, k[2], 9, -51403784);
+                c = gg(c, d, a, b, k[7], 14, 1735328473);
+                b = gg(b, c, d, a, k[12], 20, -1926607734);
+                a = hh(a, b, c, d, k[5], 4, -378558);
+                d = hh(d, a, b, c, k[8], 11, -2022574463);
+                c = hh(c, d, a, b, k[11], 16, 1839030562);
+                b = hh(b, c, d, a, k[14], 23, -35309556);
+                a = hh(a, b, c, d, k[1], 4, -1530992060);
+                d = hh(d, a, b, c, k[4], 11, 1272893353);
+                c = hh(c, d, a, b, k[7], 16, -155497632);
+                b = hh(b, c, d, a, k[10], 23, -1094730640);
+                a = hh(a, b, c, d, k[13], 4, 681279174);
+                d = hh(d, a, b, c, k[0], 11, -358537222);
+                c = hh(c, d, a, b, k[3], 16, -722521979);
+                b = hh(b, c, d, a, k[6], 23, 76029189);
+                a = hh(a, b, c, d, k[9], 4, -640364487);
+                d = hh(d, a, b, c, k[12], 11, -421815835);
+                c = hh(c, d, a, b, k[15], 16, 530742520);
+                b = hh(b, c, d, a, k[2], 23, -995338651);
+                a = ii(a, b, c, d, k[0], 6, -198630844);
+                d = ii(d, a, b, c, k[7], 10, 1126891415);
+                c = ii(c, d, a, b, k[14], 15, -1416354905);
+                b = ii(b, c, d, a, k[5], 21, -57434055);
+                a = ii(a, b, c, d, k[12], 6, 1700485571);
+                d = ii(d, a, b, c, k[3], 10, -1894986606);
+                c = ii(c, d, a, b, k[10], 15, -1051523);
+                b = ii(b, c, d, a, k[1], 21, -2054922799);
+                a = ii(a, b, c, d, k[8], 6, 1873313359);
+                d = ii(d, a, b, c, k[15], 10, -30611744);
+                c = ii(c, d, a, b, k[6], 15, -1560198380);
+                b = ii(b, c, d, a, k[13], 21, 1309151649);
+                a = ii(a, b, c, d, k[4], 6, -145523070);
+                d = ii(d, a, b, c, k[11], 10, -1120210379);
+                c = ii(c, d, a, b, k[2], 15, 718787259);
+                b = ii(b, c, d, a, k[9], 21, -343485551);
+                x[0] = add32(a, x[0]);
+                x[1] = add32(b, x[1]);
+                x[2] = add32(c, x[2]);
+                x[3] = add32(d, x[3]);
+            }
+            function cmn(q, a, b, x, s, t) {
+                a = add32(add32(a, q), add32(x, t));
+                return add32((a << s) | (a >>> (32 - s)), b);
+            }
+            function ff(a, b, c, d, x, s, t) {
+                return cmn((b & c) | ((~b) & d), a, b, x, s, t);
+            }
+            function gg(a, b, c, d, x, s, t) {
+                return cmn((b & d) | (c & (~d)), a, b, x, s, t);
+            }
+            function hh(a, b, c, d, x, s, t) {
+                return cmn(b ^ c ^ d, a, b, x, s, t);
+            }
+            function ii(a, b, c, d, x, s, t) {
+                return cmn(c ^ (b | (~d)), a, b, x, s, t);
+            }
+            function md51(s) {
+                let n = s.length, state = [1732584193, -271733879, -1732584194, 271733878], i;
+                for (i = 64; i <= s.length; i += 64) {
+                    md5cycle(state, md5blk(s.substring(i - 64, i)));
+                }
+                s = s.substring(i - 64);
+                let tail = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                for (i = 0; i < s.length; i++) tail[i >> 2] |= s.charCodeAt(i) << ((i % 4) << 3);
+                tail[i >> 2] |= 0x80 << ((i % 4) << 3);
+                if (i > 55) { md5cycle(state, tail); tail = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; }
+                tail[14] = n * 8;
+                md5cycle(state, tail);
+                return state;
+            }
+            function md5blk(s) {
+                let md5blks = [], i;
+                for (i = 0; i < 64; i += 4) {
+                    md5blks[i >> 2] = s.charCodeAt(i) + (s.charCodeAt(i + 1) << 8) + (s.charCodeAt(i + 2) << 16) + (s.charCodeAt(i + 3) << 24);
+                }
+                return md5blks;
+            }
+            let hex_chr = '0123456789abcdef'.split('');
+            function rhex(n) {
+                let s = '', j = 0, b;
+                for (; j < 4; j++) {
+                    b = (n >>> (j * 8)) & 255;
+                    s += hex_chr[b >> 4] + hex_chr[b & 15];
+                }
+                return s;
+            }
+            function hex(x) { for (let i = 0; i < x.length; i++) x[i] = rhex(x[i]); return x.join(''); }
+            function add32(a, b) { return (a + b) & 0xFFFFFFFF; }
+            let s = md51(str + LICENSE_SECRET);
+            return hex(s).toLowerCase();
+        }
+
+        function generateLicense() {
+            const companyName = document.getElementById('companyName').value.trim();
+            const companyCode = document.getElementById('companyCode').value.trim();
+            const licenseType = document.getElementById('licenseType').value;
+            const expireDate = document.getElementById('expireDate').value || '2099-12-31';
+            const maxTenants = parseInt(document.getElementById('maxTenants').value) || -1;
+            const maxUsersPerTenant = parseInt(document.getElementById('maxUsersPerTenant').value) || -1;
+            const maxAppsPerTenant = parseInt(document.getElementById('maxAppsPerTenant').value) || -1;
+
+            const features = [];
+            document.querySelectorAll('input[name="features"]:checked').forEach(cb => {
+                features.push(cb.value);
+            });
+
+            if (!companyName || !companyCode) {
+                alert('请填写公司名称和公司代码');
+                return;
+            }
+
+            const licenseData = {
+                companyName: companyName,
+                companyCode: companyCode,
+                licenseType: licenseType,
+                issueDate: new Date().toISOString().split('T')[0],
+                expireDate: expireDate,
+                maxTenants: maxTenants,
+                maxUsersPerTenant: maxUsersPerTenant,
+                maxAppsPerTenant: maxAppsPerTenant,
+                bindServers: [],
+                features: features.join(','),
+                signature: ''
+            };
+
+            const jsonStr = JSON.stringify(licenseData);
+            const jsonBase64 = btoa(unescape(encodeURIComponent(jsonStr)));
+            const md5Hash = calculateMd5(jsonStr);
+
+            const licenseKey = jsonBase64 + '.' + md5Hash;
+
+            document.getElementById('licenseOutput').textContent = licenseKey;
+            document.getElementById('resultSection').style.display = 'block';
+        }
+
+        function copyLicense() {
+            const licenseKey = document.getElementById('licenseOutput').textContent;
+            navigator.clipboard.writeText(licenseKey).then(() => {
+                alert('License 已复制到剪贴板！');
+            }).catch(() => {
+                alert('复制失败，请手动复制');
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('licenseForm').reset();
+            document.getElementById('resultSection').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

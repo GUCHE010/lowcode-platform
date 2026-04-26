@@ -32,6 +32,8 @@ public class MenuInitializer implements CommandLineRunner {
         MenuEntity menuMenu = createMenu(systemMenu.getId(), "菜单管理", "/menu", "system:menu", "Menu", 3, "active");
         MenuEntity deptMenu = createMenu(systemMenu.getId(), "部门管理", "/dept", "system:dept", "OfficeBuilding", 4, "active");
         MenuEntity postMenu = createMenu(systemMenu.getId(), "岗位管理", "/post", "system:post", "Briefcase", 5, "active");
+        MenuEntity tenantMenu = createMenu(systemMenu.getId(), "租户管理", "/tenant", "system:tenant", "Tools", 9, "active");
+        MenuEntity licenseMenu = createMenu(systemMenu.getId(), "授权许可", "/license", "system:license", "Key", 10, "active");
         
         createMenu(systemMenu.getId(), "登录日志", "/loginLog", "system:loginLog", "View", 6, "active");
         createMenu(systemMenu.getId(), "操作日志", "/operationLog", "system:operationLog", "Operation", 7, "active");

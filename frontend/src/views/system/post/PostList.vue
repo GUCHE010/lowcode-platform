@@ -10,6 +10,11 @@
 
       <el-table :data="tableData" stripe border>
         <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column prop="tenantName" label="所属租户" width="180">
+          <template #default="{ row }">
+            {{ getTenantName(row.tenantId) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="postCode" label="岗位编码" width="150" />
         <el-table-column prop="postName" label="岗位名称" width="150" />
         <el-table-column prop="postRank" label="职级" width="120">
@@ -42,6 +47,11 @@
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
       <el-form :model="formData" :rules="formRules" ref="formRef" label-width="100px">
+        <el-form-item label="租户" prop="tenantId">
+          <el-select v-model="formData.tenantId" placeholder="请选择租户" style="width: 100%;">
+            <el-option v-for="tenant in tenantList" :key="tenant.id" :label="tenant.tenantName" :value="tenant.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="岗位编码" prop="postCode">
           <el-input v-model="formData.postCode" placeholder="请输入岗位编码" />
         </el-form-item>
@@ -87,14 +97,17 @@ import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getPostList, createPost, updatePost, deletePost } from '@/api/post'
 import { getDeptList } from '@/api/dept'
+import { getTenantList } from '@/api/tenant'
 
 const tableData = ref<any[]>([])
+const tenantList = ref<any[]>([])
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增岗位')
 const formRef = ref()
 const deptList = ref<any[]>([])
 const formData = ref({
   id: null as number | null,
+  tenantId: null as number | null,
   postCode: '',
   postName: '',
   postRank: '',
@@ -112,6 +125,7 @@ const postRankOptions = [
 ]
 
 const formRules = {
+  tenantId: [{ required: true, message: '请选择租户', trigger: 'change' }],
   postCode: [{ required: true, message: '请输入岗位编码', trigger: 'blur' }],
   postName: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }]
 }
@@ -127,8 +141,20 @@ const getDeptName = (deptId: number | null) => {
   return dept ? dept.deptName : '-'
 }
 
+const getTenantName = (tenantId: number | null) => {
+  if (!tenantId) return '-'
+  const tenant = tenantList.value.find(t => t.id === tenantId)
+  return tenant ? tenant.tenantName : '-'
+}
+
 const loadDepts = async () => {
   try {
+    // 先加载租户列表
+    const tenantRes = await getTenantList()
+    if (tenantRes.success) {
+      tenantList.value = tenantRes.data || []
+    }
+
     const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
     const tenantId = userInfo.tenantId || 1
     const res = await getDeptList({ tenantId })
@@ -158,8 +184,10 @@ const loadData = async () => {
 
 const handleAdd = () => {
   dialogTitle.value = '新增岗位'
+  const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
   formData.value = {
     id: null,
+    tenantId: userInfo.tenantId || 1,
     postCode: '',
     postName: '',
     postRank: '',
@@ -173,7 +201,7 @@ const handleAdd = () => {
 
 const handleEdit = (row: any) => {
   dialogTitle.value = '编辑岗位'
-  formData.value = { ...row, deptId: row.deptId || null }
+  formData.value = { ...row, deptId: row.deptId || null, tenantId: row.tenantId || null }
   dialogVisible.value = true
 }
 

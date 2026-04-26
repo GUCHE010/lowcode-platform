@@ -1,4 +1,5 @@
 com\platform\system\controller\RoleController.class
+com\platform\system\entity\LicenseEntity.class
 com\platform\config\SystemDataInitializer.class
 com\platform\tenant\repository\TenantRepository.class
 com\platform\system\controller\MenuController.class
@@ -13,6 +14,7 @@ com\platform\system\repository\RoleRepository.class
 com\platform\system\service\DeptService.class
 com\platform\system\service\RoleService$DataScope.class
 com\platform\auth\AuthController.class
+com\platform\system\repository\LicenseRepository.class
 com\platform\system\service\MenuService.class
 com\platform\system\controller\DictionaryTypeController.class
 com\platform\system\entity\DictionaryEntity.class
@@ -27,15 +29,19 @@ com\platform\system\service\PermissionService.class
 com\platform\auth\JwtUtil.class
 com\platform\system\entity\UserRoleEntity.class
 com\platform\system\service\DictionaryCacheService.class
+com\platform\system\service\LicenseService.class
 com\platform\system\repository\UserRoleRepository.class
+com\platform\tenant\service\TenantService.class
 com\platform\system\entity\UserEntity.class
 com\platform\system\controller\DeptController.class
 com\platform\aop\OperationLogAspect.class
 com\platform\system\controller\UserController.class
+com\platform\system\controller\LicenseController.class
 com\platform\system\controller\OperationLogController.class
 com\platform\system\repository\DictionaryRepository.class
 com\platform\system\repository\LoginLogRepository.class
 com\platform\system\repository\UserRepository.class
+com\platform\tenant\controller\TenantController.class
 com\platform\system\entity\MenuEntity.class
 com\platform\system\service\OperationLogService.class
 com\platform\config\WebConfig.class

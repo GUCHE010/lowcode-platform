@@ -9,6 +9,11 @@
       </template>
 
       <el-table :data="tableData" stripe border row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+        <el-table-column prop="tenantName" label="所属租户" width="180">
+          <template #default="{ row }">
+            {{ getTenantName(row.tenantId) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="deptName" label="部门名称" width="200" />
         <el-table-column prop="deptCode" label="部门编码" width="150" />
         <el-table-column prop="deptLeader" label="负责人" width="120" />
@@ -37,6 +42,11 @@
 
     <el-dialog :title="dialogTitle" v-model="dialogVisible" width="500px">
       <el-form :model="formData" :rules="formRules" ref="formRef" label-width="100px">
+        <el-form-item label="租户" prop="tenantId">
+          <el-select v-model="formData.tenantId" placeholder="请选择租户" style="width: 100%;">
+            <el-option v-for="tenant in tenantList" :key="tenant.id" :label="tenant.tenantName" :value="tenant.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="上级部门" v-if="formData.parentId !== 0">
           <el-input v-model="parentDeptName" disabled />
         </el-form-item>
@@ -77,13 +87,16 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getDeptList, createDept, updateDept, deleteDept } from '@/api/dept'
+import { getTenantList } from '@/api/tenant'
 
 const tableData = ref<any[]>([])
+const tenantList = ref<any[]>([])
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增部门')
 const formRef = ref()
 const formData = ref({
   id: null as number | null,
+  tenantId: null as number | null,
   parentId: 0,
   deptName: '',
   deptCode: '',
@@ -97,12 +110,25 @@ const formData = ref({
 const parentDeptName = ref('')
 
 const formRules = {
+  tenantId: [{ required: true, message: '请选择租户', trigger: 'change' }],
   deptName: [{ required: true, message: '请输入部门名称', trigger: 'blur' }],
   deptCode: [{ required: true, message: '请输入部门编码', trigger: 'blur' }]
 }
 
+const getTenantName = (tenantId: number | null) => {
+  if (!tenantId) return '-'
+  const tenant = tenantList.value.find(t => t.id === tenantId)
+  return tenant ? tenant.tenantName : '-'
+}
+
 const loadData = async () => {
   try {
+    // 先加载租户列表
+    const tenantRes = await getTenantList()
+    if (tenantRes.success) {
+      tenantList.value = tenantRes.data || []
+    }
+
     const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
     const tenantId = userInfo.tenantId || 1
     const res = await getDeptList({ tenantId })
@@ -129,8 +155,10 @@ const handleStatusChange = async (row: any) => {
 
 const handleAdd = () => {
   dialogTitle.value = '新增部门'
+  const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
   formData.value = {
     id: null,
+    tenantId: userInfo.tenantId || 1,
     parentId: 0,
     deptName: '',
     deptCode: '',
@@ -146,8 +174,10 @@ const handleAdd = () => {
 
 const handleAddChild = (row: any) => {
   dialogTitle.value = '新增子部门'
+  const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
   formData.value = {
     id: null,
+    tenantId: userInfo.tenantId || 1,
     parentId: row.id,
     deptName: '',
     deptCode: '',
@@ -163,7 +193,7 @@ const handleAddChild = (row: any) => {
 
 const handleEdit = (row: any) => {
   dialogTitle.value = '编辑部门'
-  formData.value = { ...row, parentId: row.parentId || 0 }
+  formData.value = { ...row, parentId: row.parentId || 0, tenantId: row.tenantId || null }
   parentDeptName.value = ''
   dialogVisible.value = true
 }
