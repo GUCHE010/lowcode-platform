@@ -1,0 +1,12 @@
+platform:
+  security:
+    jwt-secret: ${JWT_SECRET}
+    token-expire: ${TOKEN_EXPIRE_MS:86400000}
+    # 预发环境开启 License 强制校验
+    license-enforce: true
+    # 建议通过环境变量注入，避免明文入库
+    license-public-key: ${LICENSE_PUBLIC_KEY:}
+
+logging:
+  level:
+    com.platform: INFO
