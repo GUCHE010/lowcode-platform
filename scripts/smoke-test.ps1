@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$BaseUrl = "http://localhost:8080",
     [string]$TenantCode = "default",
     [string]$Username = "admin",
@@ -36,6 +36,28 @@ function Invoke-ApiJson {
     return Invoke-RestMethod -Method $Method -Uri $Url -Headers $Headers -ContentType "application/json" -Body $json
 }
 
+function Invoke-ApiExpectStatus {
+    param(
+        [string]$Method,
+        [string]$Url,
+        [int]$ExpectedStatus,
+        [hashtable]$Headers = $null,
+        [object]$Body = $null
+    )
+    try {
+        if ($null -eq $Body) {
+            Invoke-RestMethod -Method $Method -Uri $Url -Headers $Headers | Out-Null
+        } else {
+            $json = $Body | ConvertTo-Json -Depth 8
+            Invoke-RestMethod -Method $Method -Uri $Url -Headers $Headers -ContentType "application/json" -Body $json | Out-Null
+        }
+        return $false
+    } catch {
+        $status = $_.Exception.Response.StatusCode.value__
+        return ($status -eq $ExpectedStatus)
+    }
+}
+
 $backendStartedByScript = $false
 $backendProcess = $null
 $results = @()
@@ -71,15 +93,19 @@ try {
 
     $token = $loginResp.token
     $headers = @{ Authorization = "Bearer $token" }
+    $adminTenantId = [int]$loginResp.user.tenantId
+
+    $unauthBlocked = Invoke-ApiExpectStatus -Method "GET" -Url "$BaseUrl/api/system/user/list?tenantId=$adminTenantId" -ExpectedStatus 401
+    $results += [pscustomobject]@{ Name = "authz/no-token-blocked"; Passed = $unauthBlocked; Detail = "expect=401" }
 
     $checks = @(
-        @{ Name = "system/user/list"; Url = "$BaseUrl/api/system/user/list?tenantId=$TenantId" },
-        @{ Name = "system/menu/list"; Url = "$BaseUrl/api/system/menu/list?tenantId=$TenantId" },
-        @{ Name = "system/role/list"; Url = "$BaseUrl/api/system/role/list?tenantId=$TenantId" },
-        @{ Name = "system/dictionaryType/list"; Url = "$BaseUrl/api/system/dictionaryType/list?tenantId=$TenantId" },
+        @{ Name = "system/user/list"; Url = "$BaseUrl/api/system/user/list?tenantId=$adminTenantId" },
+        @{ Name = "system/menu/list"; Url = "$BaseUrl/api/system/menu/list?tenantId=$adminTenantId" },
+        @{ Name = "system/role/list"; Url = "$BaseUrl/api/system/role/list?tenantId=$adminTenantId" },
+        @{ Name = "system/dictionaryType/list"; Url = "$BaseUrl/api/system/dictionaryType/list?tenantId=$adminTenantId" },
         @{ Name = "tenant/list"; Url = "$BaseUrl/api/tenant/list" },
-        @{ Name = "system/loginLog/list"; Url = "$BaseUrl/api/system/loginLog/list?tenantId=$TenantId" },
-        @{ Name = "system/operationLog/list"; Url = "$BaseUrl/api/system/operationLog/list?tenantId=$TenantId" }
+        @{ Name = "system/loginLog/list"; Url = "$BaseUrl/api/system/loginLog/list?tenantId=$adminTenantId" },
+        @{ Name = "system/operationLog/list"; Url = "$BaseUrl/api/system/operationLog/list?tenantId=$adminTenantId" }
     )
 
     foreach ($c in $checks) {
@@ -98,6 +124,38 @@ try {
         $results += [pscustomobject]@{ Name = "license/info"; Passed = $true; Detail = "success=$($license.success)" }
     } catch {
         $results += [pscustomobject]@{ Name = "license/info"; Passed = $false; Detail = $_.Exception.Message }
+    }
+
+    try {
+        $testLogin = Invoke-ApiJson -Method "POST" -Url "$BaseUrl/api/auth/login" -Body @{
+            tenantCode = $TenantCode
+            username   = "test"
+            password   = "test123"
+        }
+        if ($testLogin.success) {
+            $testHeaders = @{ Authorization = "Bearer $($testLogin.token)" }
+            $testTenantId = [int]$testLogin.user.tenantId
+
+            $ownAccess = $false
+            try {
+                $ownResp = Invoke-ApiJson -Method "GET" -Url "$BaseUrl/api/system/user/list?tenantId=$testTenantId" -Headers $testHeaders
+                $ownAccess = [bool]$ownResp.success
+            } catch {
+                $ownAccess = $false
+            }
+
+            if ($ownAccess) {
+                $crossTenantBlocked = Invoke-ApiExpectStatus -Method "GET" -Url "$BaseUrl/api/system/user/list?tenantId=$($testTenantId + 9999)" -ExpectedStatus 403 -Headers $testHeaders
+                $results += [pscustomobject]@{ Name = "tenant-isolation/cross-tenant-blocked"; Passed = $crossTenantBlocked; Detail = "expect=403" }
+            } else {
+                $insufficientRoleBlocked = Invoke-ApiExpectStatus -Method "GET" -Url "$BaseUrl/api/system/user/list?tenantId=$testTenantId" -ExpectedStatus 403 -Headers $testHeaders
+                $results += [pscustomobject]@{ Name = "rbac/insufficient-role-blocked"; Passed = $insufficientRoleBlocked; Detail = "expect=403" }
+            }
+        } else {
+            $results += [pscustomobject]@{ Name = "rbac/test-user-login"; Passed = $false; Detail = "test user login failed" }
+        }
+    } catch {
+        $results += [pscustomobject]@{ Name = "rbac/test-user-check"; Passed = $false; Detail = $_.Exception.Message }
     }
 
     Write-Host ""
