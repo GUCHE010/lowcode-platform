@@ -15,8 +15,10 @@ spring:
 
 platform:
   security:
-    jwt-secret: mySecretKey123456789012345678901234567890
+    jwt-secret: ${JWT_SECRET:mySecretKey123456789012345678901234567890}
     token-expire: 86400000
+    license-public-key: ${LICENSE_PUBLIC_KEY:}
+    license-enforce: false
 
 server:
   port: 8080

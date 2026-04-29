@@ -1,0 +1,11 @@
+platform:
+  security:
+    # 生产环境必须通过环境变量注入
+    jwt-secret: ${JWT_SECRET}
+    token-expire: ${TOKEN_EXPIRE_MS:86400000}
+    license-enforce: true
+    license-public-key: ${LICENSE_PUBLIC_KEY}
+
+logging:
+  level:
+    com.platform: WARN
