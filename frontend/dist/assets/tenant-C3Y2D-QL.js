@@ -1,0 +1,1 @@
+import{r as e}from"./request-BrHKG1xe.js";const r=t=>e({url:"/tenant/list",method:"get",params:t}),a=t=>e({url:"/tenant",method:"post",data:t}),s=t=>e({url:"/tenant",method:"put",data:t}),o=t=>e({url:`/tenant/${t}`,method:"delete"});export{a as c,o as d,r as g,s as u};

@@ -26,7 +26,7 @@ public class SecurityConfig {
         
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.disable())
+            .cors(cors -> cors.configure(http))
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth

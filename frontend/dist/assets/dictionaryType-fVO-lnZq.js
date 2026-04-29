@@ -1,1 +1,0 @@
-import{r as e}from"./request-Dg9Xxc6d.js";const s=t=>e({url:"/system/dictionaryType/list",method:"get",params:t}),o=t=>e({url:"/system/dictionaryType",method:"post",data:t}),y=t=>e({url:"/system/dictionaryType",method:"put",data:t}),i=t=>e({url:`/system/dictionaryType/${t}`,method:"delete"});export{o as c,i as d,s as g,y as u};
